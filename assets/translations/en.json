@@ -1,0 +1,57 @@
+{
+  "app": {
+    "title": "Currency Exchange Tracker"
+  },
+  "language": {
+    "label": "Language",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "rates": {
+    "title": "Exchange Rates",
+    "base_hint": "Rates against the Egyptian Pound (EGP)",
+    "unit_format": "1 {code} = {value} EGP",
+    "empty": "No exchange rates to show yet.",
+    "pull_to_refresh": "Pull down to refresh"
+  },
+  "detail": {
+    "title": "{code} / EGP",
+    "current_rate": "Current rate",
+    "daily_change": "Daily change",
+    "last_update": "Last update",
+    "chart_title": "Last 7 days",
+    "chart_empty": "No chart data available for this currency."
+  },
+  "offline": {
+    "banner": "You're offline — showing the last saved rates.",
+    "last_updated": "Last updated {date}"
+  },
+  "change": {
+    "egp_stronger": "EGP stronger",
+    "egp_weaker": "EGP weaker"
+  },
+  "common": {
+    "retry": "Retry",
+    "loading": "Loading…",
+    "cancel": "Cancel",
+    "ok": "OK"
+  },
+  "errors": {
+    "server": "The server ran into a problem. Please try again.",
+    "network": "No internet connection. Check your network and try again.",
+    "timeout": "The request timed out. Please try again.",
+    "not_found": "The requested data was not found.",
+    "unauthorized": "Your session has expired.",
+    "forbidden": "You don't have access to this resource.",
+    "validation": "Some values were rejected by the server.",
+    "cache": "Could not read the saved data.",
+    "unknown": "Something went wrong. Please try again."
+  },
+  "currencies": {
+    "usd": "US Dollar",
+    "eur": "Euro",
+    "gbp": "British Pound",
+    "sar": "Saudi Riyal",
+    "jpy": "Japanese Yen"
+  }
+}

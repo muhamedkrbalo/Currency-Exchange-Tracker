@@ -1,22 +1,44 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'core/localization/app_localization.dart';
+import 'core/localization/locale_keys.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+
+  runApp(
+    EasyLocalization(
+      supportedLocales: AppLocalization.supported,
+      path: AppLocalization.path,
+      fallbackLocale: AppLocalization.fallback,
+      child: const CurrencyExchangeApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class CurrencyExchangeApp extends StatelessWidget {
+  const CurrencyExchangeApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: LocaleKeys.app_title.tr(),
+      debugShowCheckedModeBanner: false,
+      // These three lines are what make localization (and RTL for Arabic) work.
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorSchemeSeed: Colors.teal,
+        useMaterial3: true,
       ),
-      home: SizedBox()
+      home: const Scaffold(
+        body: Center(
+          child: Text('Currency Exchange Tracker'),
+        ),
+      ),
     );
   }
 }
-
