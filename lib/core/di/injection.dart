@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive_ce/hive_ce.dart';
 
+import '../../app/theme/theme_cubit.dart';
+import '../config/hive_boxes.dart';
 import '../network/api_client.dart';
 import '../network/api_config.dart';
 import '../network/dio_api_client.dart';
@@ -16,5 +19,7 @@ void _registerCore() {
   getIt
     ..registerLazySingleton<ApiConfig>(() => const ApiConfig())
     ..registerLazySingleton<Dio>(() => const DioFactory().create())
-    ..registerLazySingleton<ApiClient>(() => DioApiClient(getIt<Dio>()));
+    ..registerLazySingleton<ApiClient>(() => DioApiClient(getIt<Dio>()))
+    ..registerLazySingleton<Box>(() => Hive.box(HiveBoxes.settings))
+    ..registerLazySingleton<ThemeCubit>(() => ThemeCubit(getIt<Box>()));
 }
