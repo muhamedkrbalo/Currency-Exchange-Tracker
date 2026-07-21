@@ -8,7 +8,7 @@ import 'rates_list_state.dart';
 
 class RatesListCubit extends Cubit<RatesListState> {
   RatesListCubit(this._getLatestRates, this._networkInfo)
-      : super(const RatesListState.initial());
+    : super(const RatesListState.initial());
 
   final GetLatestRatesUseCase _getLatestRates;
   final NetworkInfo _networkInfo;
