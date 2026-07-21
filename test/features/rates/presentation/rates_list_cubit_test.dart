@@ -80,8 +80,9 @@ void main() {
     blocTest<RatesListCubit, RatesListState>(
       'emits [Loading, Error] when the use case fails',
       setUp: () {
-        when(() => useCase())
-            .thenAnswer((_) async => const Result.failure(NetworkFailure()));
+        when(
+          () => useCase(),
+        ).thenAnswer((_) async => const Result.failure(NetworkFailure()));
       },
       build: build,
       act: (cubit) => cubit.load(),
@@ -94,8 +95,9 @@ void main() {
     blocTest<RatesListCubit, RatesListState>(
       'emits Loaded with null lastUpdated for empty rates',
       setUp: () {
-        when(() => useCase())
-            .thenAnswer((_) async => const Result.success(<CurrencyRate>[]));
+        when(
+          () => useCase(),
+        ).thenAnswer((_) async => const Result.success(<CurrencyRate>[]));
         when(() => networkInfo.isConnected).thenAnswer((_) async => true);
       },
       build: build,
@@ -128,8 +130,9 @@ void main() {
     blocTest<RatesListCubit, RatesListState>(
       'emits Error without a Loading state on failure',
       setUp: () {
-        when(() => useCase())
-            .thenAnswer((_) async => const Result.failure(ServerFailure()));
+        when(
+          () => useCase(),
+        ).thenAnswer((_) async => const Result.failure(ServerFailure()));
       },
       build: build,
       act: (cubit) => cubit.refresh(),
