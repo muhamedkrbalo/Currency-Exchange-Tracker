@@ -16,6 +16,7 @@ import '../../features/rates/data/datasources/remote/rates_remote_data_source.da
 import '../../features/rates/data/repositories/currency_repository_impl.dart';
 import '../../features/rates/domain/repositories/currency_repository.dart';
 import '../../features/rates/domain/usecases/get_latest_rates_usecase.dart';
+import '../../features/rates/presentation/cubit/rates_list_cubit.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -41,6 +42,9 @@ void _registerRates() {
     )
     ..registerLazySingleton<GetLatestRatesUseCase>(
       () => GetLatestRatesUseCase(getIt<CurrencyRepository>()),
+    )
+    ..registerFactory<RatesListCubit>(
+      () => RatesListCubit(getIt<GetLatestRatesUseCase>(), getIt<NetworkInfo>()),
     );
 }
 
