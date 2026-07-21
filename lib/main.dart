@@ -12,6 +12,7 @@ Future<void> main() async {
   await EasyLocalization.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox(HiveBoxes.settings);
+  await Hive.openBox(HiveBoxes.ratesCache);
   await configureDependencies();
 
   runApp(
