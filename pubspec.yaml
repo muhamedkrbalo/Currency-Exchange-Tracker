@@ -31,10 +31,41 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  # --- State management -------------------------------------------------
+  flutter_bloc: ^9.1.1        
+  bloc: ^9.2.1               
+
+  # --- Dependency injection ---------------------------------------------
+  get_it: ^9.2.1            
+
+  # --- Networking -------------------------------------------------------
+  dio: ^5.10.0               # HTTP client (interceptors, timeouts, cancellation).
+  dio_smart_retry: ^7.0.1    # Auto-retry with backoff for failed GETs.
+  pretty_dio_logger: ^1.4.0  # Readable request/response logs (debug only).
+  connectivity_plus: ^7.3.0  # Online/offline detection — drives the offline cache.
+
+  # --- Local storage / cache --------------------------------------------
+  hive_ce: ^2.19.3           # Fast key-value DB — persists the last rates snapshot.
+  hive_ce_flutter: ^2.3.4    # Flutter glue for Hive (init + path handling).
+
+  # --- Models & serialization -------------------------------------------
+  freezed_annotation: ^3.1.0 # Annotations for immutable models/states (runtime side of freezed).
+  json_annotation: ^4.12.0   # Annotations for JSON (runtime side of json_serializable).
+
+  # --- Navigation & UI --------------------------------------------------
+  go_router: ^17.3.0         # Declarative routing (list -> detail).
+  fl_chart: ^1.2.0           # The 7-day line chart on the detail screen.
+  shimmer: ^3.0.0            # Shimmer loading placeholder (required by the task).
+  intl: ^0.20.2              # Date/number formatting. Must be ^0.20.2 — flutter_localizations pins intl to 0.20.2.
+
+  # --- Utilities (optional / opinionated) -------------------------------
+  flutter_screenutil: ^5.9.3 # Responsive scaling. OPINIONATED: overkill for 2 screens — a spacing system + LayoutBuilder is often enough.
+  equatable: ^2.1.0 
+
+  # --- Localization -----------------------------------------------------     
+  easy_localization: ^3.0.8   
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -44,7 +75,18 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^6.0.0
+  flutter_lints: ^6.0.0        
+
+  # --- Code generation (build-time only, never shipped in the app) ------
+  build_runner: ^2.15.1        # Runs all the generators below.
+  freezed: ^3.2.6-dev.1        # Generates immutable models/states. Pre-release is required (see note under §13 in ARCHITECTURE.md).
+  json_serializable: ^6.14.0   # Generates fromJson/toJson.
+  hive_ce_generator: ^1.11.2   # Generates Hive type adapters.
+
+  # --- Testing ----------------------------------------------------------
+  bloc_test: ^10.0.0           # Ergonomic helpers for testing Cubits/Blocs.
+  mocktail: ^1.0.5             # Mocking without codegen (null-safe).
+  shared_preferences: ^2.5.5   # Only to mock easy_localization's locale storage in tests.
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -56,6 +98,10 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  # Translation files loaded by easy_localization (en.json, ar.json).
+  assets:
+    - assets/translations/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
