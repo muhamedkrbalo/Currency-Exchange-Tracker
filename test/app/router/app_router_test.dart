@@ -1,7 +1,11 @@
+import 'dart:async';
+
+import 'package:currency_exchange_tracker/app/connectivity/connectivity_cubit.dart';
 import 'package:currency_exchange_tracker/app/router/app_router.dart';
 import 'package:currency_exchange_tracker/app/router/app_routes.dart';
 import 'package:currency_exchange_tracker/core/di/injection.dart';
 import 'package:currency_exchange_tracker/core/localization/app_localization.dart';
+import 'package:currency_exchange_tracker/core/network_info/network_info.dart';
 import 'package:currency_exchange_tracker/features/rates/presentation/cubit/rates_list_cubit.dart';
 import 'package:currency_exchange_tracker/features/rates/presentation/cubit/rates_list_state.dart';
 import 'package:currency_exchange_tracker/features/rates/presentation/screens/rates_list_screen.dart';
@@ -25,6 +29,14 @@ class _FakeRatesListCubit extends Cubit<RatesListState>
   Future<void> refresh() async {}
 }
 
+class _FakeNetworkInfo implements NetworkInfo {
+  @override
+  Future<bool> get isConnected async => true;
+
+  @override
+  Stream<bool> get onStatusChange => const Stream<bool>.empty();
+}
+
 void main() {
   setUp(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -42,13 +54,16 @@ void main() {
       path: AppLocalization.path,
       fallbackLocale: AppLocalization.fallback,
       startLocale: AppLocalization.english,
-      child: Builder(
-        builder: (context) => MaterialApp.router(
-          localizationsDelegates: context.localizationDelegates,
-          supportedLocales: context.supportedLocales,
-          locale: context.locale,
-          theme: AppTheme.light(),
-          routerConfig: router,
+      child: BlocProvider<ConnectivityCubit>(
+        create: (_) => ConnectivityCubit(_FakeNetworkInfo()),
+        child: Builder(
+          builder: (context) => MaterialApp.router(
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+            theme: AppTheme.light(),
+            routerConfig: router,
+          ),
         ),
       ),
     );

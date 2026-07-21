@@ -1,4 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:currency_exchange_tracker/app/connectivity/connectivity_cubit.dart';
 import 'package:currency_exchange_tracker/core/error/failures.dart';
 import 'package:currency_exchange_tracker/core/localization/app_localization.dart';
 import 'package:currency_exchange_tracker/features/rates/domain/entities/currency_rate.dart';
@@ -18,6 +19,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class _MockRatesListCubit extends MockCubit<RatesListState>
     implements RatesListCubit {}
 
+class _MockConnectivityCubit extends MockCubit<bool>
+    implements ConnectivityCubit {}
+
 CurrencyRate _rate(String code) => CurrencyRate(
   code: code,
   name: code.toUpperCase(),
@@ -28,12 +32,15 @@ CurrencyRate _rate(String code) => CurrencyRate(
 
 void main() {
   late _MockRatesListCubit cubit;
+  late _MockConnectivityCubit connectivity;
 
   setUp(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
     await EasyLocalization.ensureInitialized();
     cubit = _MockRatesListCubit();
+    connectivity = _MockConnectivityCubit();
+    whenListen(connectivity, const Stream<bool>.empty(), initialState: true);
   });
 
   Future<void> pumpScreen(WidgetTester tester, RatesListState state) async {
@@ -53,8 +60,11 @@ void main() {
           supportedLocales: context.supportedLocales,
           locale: context.locale,
           theme: AppTheme.light(),
-          home: BlocProvider<RatesListCubit>.value(
-            value: cubit,
+          home: MultiBlocProvider(
+            providers: [
+              BlocProvider<RatesListCubit>.value(value: cubit),
+              BlocProvider<ConnectivityCubit>.value(value: connectivity),
+            ],
             child: const RatesListScreen(),
           ),
         ),
@@ -116,6 +126,46 @@ void main() {
     await tester.fling(find.byType(RateTile), const Offset(0, 400), 1000);
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
+
+    verify(() => cubit.refresh()).called(1);
+  });
+
+  testWidgets('shows the offline banner when serving cached rates', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      RatesListState.loaded(
+        rates: [_rate('usd')],
+        isFromCache: true,
+        lastUpdated: DateTime(2026, 7, 21),
+      ),
+    );
+
+    expect(find.byType(OfflineBanner), findsOneWidget);
+  });
+
+  testWidgets('hides the offline banner when rates are fresh', (tester) async {
+    await pumpScreen(
+      tester,
+      RatesListState.loaded(rates: [_rate('usd')], isFromCache: false),
+    );
+
+    expect(find.byType(OfflineBanner), findsNothing);
+  });
+
+  testWidgets('refreshes when connectivity is restored', (tester) async {
+    when(() => cubit.refresh()).thenAnswer((_) async {});
+    whenListen(
+      connectivity,
+      Stream<bool>.fromIterable([true]),
+      initialState: false,
+    );
+
+    await pumpScreen(
+      tester,
+      RatesListState.loaded(rates: [_rate('usd')], isFromCache: true),
+    );
 
     verify(() => cubit.refresh()).called(1);
   });
