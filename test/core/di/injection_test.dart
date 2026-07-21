@@ -1,7 +1,10 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:currency_exchange_tracker/core/di/injection.dart';
 import 'package:currency_exchange_tracker/core/network/api_client.dart';
 import 'package:currency_exchange_tracker/core/network/api_config.dart';
 import 'package:currency_exchange_tracker/core/network/dio_api_client.dart';
+import 'package:currency_exchange_tracker/core/network_info/connectivity_network_info.dart';
+import 'package:currency_exchange_tracker/core/network_info/network_info.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -17,6 +20,23 @@ void main() {
     expect(getIt.isRegistered<Dio>(), isTrue);
     expect(getIt.isRegistered<ApiClient>(), isTrue);
     expect(getIt<ApiClient>(), isA<DioApiClient>());
+  });
+
+  test('registers Connectivity and NetworkInfo', () async {
+    await configureDependencies();
+
+    expect(getIt.isRegistered<Connectivity>(), isTrue);
+    expect(getIt.isRegistered<NetworkInfo>(), isTrue);
+    expect(getIt<NetworkInfo>(), isA<ConnectivityNetworkInfo>());
+  });
+
+  test('NetworkInfo is injected with the registered Connectivity instance',
+      () async {
+    await configureDependencies();
+
+    final connectivity = getIt<Connectivity>();
+    final networkInfo = getIt<NetworkInfo>() as ConnectivityNetworkInfo;
+    expect(identical(networkInfo.connectivity, connectivity), isTrue);
   });
 
   test('ApiClient is injected with the registered Dio instance', () async {
