@@ -11,11 +11,19 @@ import '../network/dio_api_client.dart';
 import '../network/dio_client.dart';
 import '../network_info/connectivity_network_info.dart';
 import '../network_info/network_info.dart';
+import '../../features/rates/data/datasources/local/currency_local_data_source.dart';
 
 final GetIt getIt = GetIt.instance;
 
 Future<void> configureDependencies() async {
   _registerCore();
+  _registerRates();
+}
+
+void _registerRates() {
+  getIt.registerLazySingleton<CurrencyLocalDataSource>(
+    () => CurrencyLocalDataSource(Hive.box<dynamic>(HiveBoxes.ratesCache)),
+  );
 }
 
 void _registerCore() {
