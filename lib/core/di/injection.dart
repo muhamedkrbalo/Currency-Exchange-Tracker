@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_ce/hive_ce.dart';
 
+import '../../app/connectivity/connectivity_cubit.dart';
 import '../../app/theme/theme_cubit.dart';
 import '../config/hive_boxes.dart';
 import '../network/api_client.dart';
@@ -23,6 +24,13 @@ final GetIt getIt = GetIt.instance;
 Future<void> configureDependencies() async {
   _registerCore();
   _registerRates();
+  _registerConnectivity();
+}
+
+void _registerConnectivity() {
+  getIt.registerLazySingleton<ConnectivityCubit>(
+    () => ConnectivityCubit(getIt<NetworkInfo>()),
+  );
 }
 
 void _registerRates() {
@@ -44,7 +52,8 @@ void _registerRates() {
       () => GetLatestRatesUseCase(getIt<CurrencyRepository>()),
     )
     ..registerFactory<RatesListCubit>(
-      () => RatesListCubit(getIt<GetLatestRatesUseCase>(), getIt<NetworkInfo>()),
+      () =>
+          RatesListCubit(getIt<GetLatestRatesUseCase>(), getIt<NetworkInfo>()),
     );
 }
 

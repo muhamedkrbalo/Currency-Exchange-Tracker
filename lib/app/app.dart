@@ -7,6 +7,7 @@ import '../core/di/injection.dart';
 import '../core/localization/locale_keys.dart';
 import '../shared/responsive/app_screen_util_init.dart';
 import '../shared/theme/app_theme.dart';
+import 'connectivity/connectivity_cubit.dart';
 import 'router/app_router.dart';
 import 'theme/theme_cubit.dart';
 
@@ -22,8 +23,13 @@ class _CurrencyExchangeAppState extends State<CurrencyExchangeApp> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ThemeCubit>(
-      create: (_) => getIt<ThemeCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ThemeCubit>(create: (_) => getIt<ThemeCubit>()),
+        BlocProvider<ConnectivityCubit>(
+          create: (_) => getIt<ConnectivityCubit>(),
+        ),
+      ],
       child: AppScreenUtilInit(
         builder: (context) => BlocBuilder<ThemeCubit, ThemeMode>(
           builder: (context, themeMode) => MaterialApp.router(
