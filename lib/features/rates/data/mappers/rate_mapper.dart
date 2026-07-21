@@ -1,5 +1,6 @@
 import '../../../../core/config/currency_catalog.dart';
 import '../../domain/entities/currency_rate.dart';
+import '../../domain/entities/historical_rate.dart';
 import '../models/rates_response_dto.dart';
 
 class RateMapper {
@@ -26,6 +27,23 @@ class RateMapper {
       );
     }
     return result;
+  }
+
+  List<HistoricalRate> toHistoricalRates(
+    Iterable<RatesResponseDto> snapshots,
+    String code,
+  ) {
+    final key = code.toLowerCase();
+    final points = <HistoricalRate>[];
+    for (final snapshot in snapshots) {
+      final rate = _egpPerUnit(snapshot.rates[key]);
+      if (rate == null) continue;
+      points.add(
+        HistoricalRate(date: DateTime.parse(snapshot.date), rateInEgp: rate),
+      );
+    }
+    points.sort((a, b) => a.date.compareTo(b.date));
+    return points;
   }
 
   double? _egpPerUnit(double? egpToForeignUnit) =>

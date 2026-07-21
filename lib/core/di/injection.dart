@@ -12,6 +12,10 @@ import '../network/dio_client.dart';
 import '../network_info/connectivity_network_info.dart';
 import '../network_info/network_info.dart';
 import '../../features/rates/data/datasources/local/currency_local_data_source.dart';
+import '../../features/rates/data/datasources/remote/rates_remote_data_source.dart';
+import '../../features/rates/data/repositories/currency_repository_impl.dart';
+import '../../features/rates/domain/repositories/currency_repository.dart';
+import '../../features/rates/domain/usecases/get_latest_rates_usecase.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -21,9 +25,23 @@ Future<void> configureDependencies() async {
 }
 
 void _registerRates() {
-  getIt.registerLazySingleton<CurrencyLocalDataSource>(
-    () => CurrencyLocalDataSource(Hive.box<dynamic>(HiveBoxes.ratesCache)),
-  );
+  getIt
+    ..registerLazySingleton<CurrencyLocalDataSource>(
+      () => CurrencyLocalDataSource(Hive.box<dynamic>(HiveBoxes.ratesCache)),
+    )
+    ..registerLazySingleton<CurrencyRemoteDataSource>(
+      () => CurrencyRemoteDataSource(getIt<ApiClient>(), getIt<ApiConfig>()),
+    )
+    ..registerLazySingleton<CurrencyRepository>(
+      () => CurrencyRepositoryImpl(
+        getIt<CurrencyRemoteDataSource>(),
+        getIt<CurrencyLocalDataSource>(),
+        getIt<NetworkInfo>(),
+      ),
+    )
+    ..registerLazySingleton<GetLatestRatesUseCase>(
+      () => GetLatestRatesUseCase(getIt<CurrencyRepository>()),
+    );
 }
 
 void _registerCore() {
