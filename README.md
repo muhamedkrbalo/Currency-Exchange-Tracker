@@ -9,9 +9,10 @@ is disconnected.
 
 ## Screenshots
 
-| iOS | Android |
-|:---:|:---:|
-| <img src="screenshots/ios_rates_list.png" width="300" alt="Exchange rates list on iOS"/> | <img src="screenshots/android_rates_list.png" width="300" alt="Exchange rates list on Android"/> |
+| | Rates list | Detail + 7‑day chart |
+|:--|:---:|:---:|
+| **iOS** | <img src="assets/images/ios_rates.png" width="260" alt="Exchange rates list on iOS"/> | <img src="assets/images/ios_details.png" width="260" alt="Currency detail with 7-day chart on iOS"/> |
+| **Android** | <img src="assets/images/android_rates.png" width="260" alt="Exchange rates list on Android"/> | <img src="assets/images/android_details.png" width="260" alt="Currency detail with 7-day chart on Android"/> |
 
 ---
 
