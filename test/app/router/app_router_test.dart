@@ -6,6 +6,9 @@ import 'package:currency_exchange_tracker/app/router/app_routes.dart';
 import 'package:currency_exchange_tracker/core/di/injection.dart';
 import 'package:currency_exchange_tracker/core/localization/app_localization.dart';
 import 'package:currency_exchange_tracker/core/network_info/network_info.dart';
+import 'package:currency_exchange_tracker/features/currency_detail/presentation/cubit/currency_detail_cubit.dart';
+import 'package:currency_exchange_tracker/features/currency_detail/presentation/cubit/currency_detail_state.dart';
+import 'package:currency_exchange_tracker/features/currency_detail/presentation/screens/currency_detail_screen.dart';
 import 'package:currency_exchange_tracker/features/rates/presentation/cubit/rates_list_cubit.dart';
 import 'package:currency_exchange_tracker/features/rates/presentation/cubit/rates_list_state.dart';
 import 'package:currency_exchange_tracker/features/rates/presentation/screens/rates_list_screen.dart';
@@ -37,12 +40,22 @@ class _FakeNetworkInfo implements NetworkInfo {
   Stream<bool> get onStatusChange => const Stream<bool>.empty();
 }
 
+class _FakeCurrencyDetailCubit extends Cubit<CurrencyDetailState>
+    implements CurrencyDetailCubit {
+  _FakeCurrencyDetailCubit() : super(const CurrencyDetailState.loaded([]));
+
+  @override
+  Future<void> load(String code) async {}
+}
+
 void main() {
   setUp(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
     await EasyLocalization.ensureInitialized();
-    getIt.registerFactory<RatesListCubit>(_FakeRatesListCubit.new);
+    getIt
+      ..registerFactory<RatesListCubit>(_FakeRatesListCubit.new)
+      ..registerFactory<CurrencyDetailCubit>(_FakeCurrencyDetailCubit.new);
   });
 
   tearDown(getIt.reset);
@@ -90,7 +103,8 @@ void main() {
       router.go(AppRoutes.currencyDetail('USD'));
       await tester.pumpAndSettle();
 
-      expect(find.widgetWithText(AppBar, 'USD'), findsOneWidget);
+      expect(find.byType(CurrencyDetailScreen), findsOneWidget);
+      expect(find.widgetWithText(AppBar, 'USD / EGP'), findsOneWidget);
     },
   );
 
@@ -105,6 +119,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.widgetWithText(AppBar, 'EUR'), findsOneWidget);
+    expect(find.byType(CurrencyDetailScreen), findsOneWidget);
+    expect(find.widgetWithText(AppBar, 'EUR / EGP'), findsOneWidget);
   });
 }
