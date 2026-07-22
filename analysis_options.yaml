@@ -9,6 +9,9 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+plugins:
+  import_lint: ^2.0.0
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`
@@ -23,6 +26,52 @@ linter:
   rules:
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
     # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+
+# Enforces the inward-only dependency rule from ARCHITECTURE.md (§1, §11):
+# presentation -> domain <- data; core/shared are leaves; domain is pure Dart.
+# Checked in CI via `dart run import_lint` (exits non-zero on any violation).
+import_lint:
+  # Any violation is a hard error so `dart run import_lint` exits non-zero and
+  # fails CI (the default is a soft warning that exits 0).
+  severity: error
+  rules:
+    # Domain is pure Dart — no Flutter.
+    domain_no_flutter:
+      target: "package:currency_exchange_tracker/features/*/domain/**/*.dart"
+      from: "package:flutter/*.dart"
+      except: []
+    # Domain must not depend on the data layer (dependencies point inward).
+    domain_no_data:
+      target: "package:currency_exchange_tracker/features/*/domain/**/*.dart"
+      from: "package:currency_exchange_tracker/features/*/data/**/*.dart"
+      except: []
+    # Domain must not depend on the presentation layer.
+    domain_no_presentation:
+      target: "package:currency_exchange_tracker/features/*/domain/**/*.dart"
+      from: "package:currency_exchange_tracker/features/*/presentation/**/*.dart"
+      except: []
+    # Presentation talks to domain, never straight to data.
+    presentation_no_data:
+      target: "package:currency_exchange_tracker/features/*/presentation/**/*.dart"
+      from: "package:currency_exchange_tracker/features/*/data/**/*.dart"
+      except: []
+    # Data may depend on domain/core, never on presentation (no widgets/Bloc).
+    data_no_presentation:
+      target: "package:currency_exchange_tracker/features/*/data/**/*.dart"
+      from: "package:currency_exchange_tracker/features/*/presentation/**/*.dart"
+      except: []
+    # core infrastructure is a leaf; it must not reference features. The DI
+    # composition root (core/di/injection.dart) is the deliberate exception —
+    # it wires features together — so it is not among the targeted directories.
+    core_no_features:
+      target: "package:currency_exchange_tracker/core/{network,error,result,config,localization,network_info}/**/*.dart"
+      from: "package:currency_exchange_tracker/features/**/*.dart"
+      except: []
+    # shared (reusable UI + helpers) must never depend on a feature.
+    shared_no_features:
+      target: "package:currency_exchange_tracker/shared/**/*.dart"
+      from: "package:currency_exchange_tracker/features/**/*.dart"
+      except: []
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

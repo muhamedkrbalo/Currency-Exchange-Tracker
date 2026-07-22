@@ -88,6 +88,9 @@ dev_dependencies:
   mocktail: ^1.0.5             # Mocking without codegen (null-safe).
   shared_preferences: ^2.5.5   # Only to mock easy_localization's locale storage in tests.
 
+  # --- Architecture enforcement (build-time / CI only) ------------------
+  import_lint: ^2.0.0          # Enforces the ARCHITECTURE.md dependency rule; see analysis_options.yaml.
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
