@@ -18,6 +18,8 @@ import '../../features/rates/data/repositories/currency_repository_impl.dart';
 import '../../features/rates/domain/repositories/currency_repository.dart';
 import '../../features/rates/domain/usecases/get_latest_rates_usecase.dart';
 import '../../features/rates/presentation/cubit/rates_list_cubit.dart';
+import '../../features/currency_detail/domain/usecases/get_currency_history_usecase.dart';
+import '../../features/currency_detail/presentation/cubit/currency_detail_cubit.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -25,6 +27,17 @@ Future<void> configureDependencies() async {
   _registerCore();
   _registerRates();
   _registerConnectivity();
+  _registerCurrencyDetail();
+}
+
+void _registerCurrencyDetail() {
+  getIt
+    ..registerLazySingleton<GetCurrencyHistoryUseCase>(
+      () => GetCurrencyHistoryUseCase(getIt<CurrencyRepository>()),
+    )
+    ..registerFactory<CurrencyDetailCubit>(
+      () => CurrencyDetailCubit(getIt<GetCurrencyHistoryUseCase>()),
+    );
 }
 
 void _registerConnectivity() {
