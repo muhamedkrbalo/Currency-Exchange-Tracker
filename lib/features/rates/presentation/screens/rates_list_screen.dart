@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../app/connectivity/connectivity_cubit.dart';
+import '../../../../app/router/app_routes.dart';
 import '../../../../core/localization/locale_keys.dart';
 import '../../../../shared/extensions/build_context_theme_ext.dart';
 import '../../../../shared/formatters/failure_message_mapper.dart';
@@ -77,7 +79,16 @@ class _RatesList extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: context.spacing.sm),
               itemCount: rates.length,
               separatorBuilder: (_, _) => const Divider(height: 1),
-              itemBuilder: (_, index) => RateTile(rate: rates[index]),
+              itemBuilder: (context, index) {
+                final rate = rates[index];
+                return RateTile(
+                  rate: rate,
+                  onTap: () => context.pushNamed(
+                    AppRoutes.currencyDetailName,
+                    pathParameters: {'code': rate.code},
+                  ),
+                );
+              },
             ),
           ),
         ),
