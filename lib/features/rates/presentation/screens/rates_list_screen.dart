@@ -13,6 +13,7 @@ import '../../domain/entities/currency_rate.dart';
 import '../cubit/rates_list_cubit.dart';
 import '../cubit/rates_list_state.dart';
 import '../widgets/rate_tile.dart';
+import '../widgets/rates_list_skeleton.dart';
 
 class RatesListScreen extends StatelessWidget {
   const RatesListScreen({super.key});
@@ -26,9 +27,8 @@ class RatesListScreen extends StatelessWidget {
         listener: (context, _) => context.read<RatesListCubit>().refresh(),
         child: BlocBuilder<RatesListCubit, RatesListState>(
           builder: (context, state) => switch (state) {
-            RatesListInitial() || RatesListLoading() => LoadingView(
-              message: LocaleKeys.common_loading.tr(),
-            ),
+            RatesListInitial() || RatesListLoading() =>
+              const RatesListSkeleton(),
             RatesListError(:final failure) => _Refreshable(
               child: ErrorView(
                 message: mapFailureToMessage(failure),
