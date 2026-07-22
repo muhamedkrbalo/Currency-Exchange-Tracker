@@ -40,6 +40,25 @@ void main() {
     expect(dataSource.getCachedRates(), dto);
   });
 
+  test('has no previous snapshot until one is provided', () async {
+    await dataSource.cacheRates(dto);
+
+    expect(dataSource.getCachedPreviousRates(), isNull);
+  });
+
+  test('round-trips the previous snapshot when provided', () async {
+    const previous = RatesResponseDto(
+      date: '2026-05-31',
+      base: 'egp',
+      rates: {'usd': 0.021},
+    );
+
+    await dataSource.cacheRates(dto, previous: previous);
+
+    expect(dataSource.getCachedRates(), dto);
+    expect(dataSource.getCachedPreviousRates(), previous);
+  });
+
   test('stores the provided last-updated timestamp', () async {
     final at = DateTime(2026, 6, 1, 9, 30);
 

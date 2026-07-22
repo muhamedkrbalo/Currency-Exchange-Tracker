@@ -33,7 +33,7 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
       final previousDay =
           DateTime.parse(today.date).subtract(const Duration(days: 1));
       final yesterday = await _remote.getByDate(previousDay);
-      await _local.cacheRates(today);
+      await _local.cacheRates(today, previous: yesterday);
       return Result.success(
         _mapper.toCurrencyRates(latest: today, previous: yesterday),
       );
@@ -67,8 +67,9 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
     if (failure is NetworkFailure || failure is TimeoutFailure) {
       final cached = _local.getCachedRates();
       if (cached != null) {
+        final cachedPrevious = _local.getCachedPreviousRates() ?? cached;
         return Result.success(
-          _mapper.toCurrencyRates(latest: cached, previous: cached),
+          _mapper.toCurrencyRates(latest: cached, previous: cachedPrevious),
         );
       }
     }

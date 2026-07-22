@@ -48,25 +48,40 @@ void main() {
         () async {
       when(() => remote.getLatest()).thenAnswer((_) async => today);
       when(() => remote.getByDate(any())).thenAnswer((_) async => yesterday);
-      when(() => local.cacheRates(any())).thenAnswer((_) async {});
+      when(() => local.cacheRates(any(), previous: any(named: 'previous')))
+          .thenAnswer((_) async {});
 
       final result = await repository.getLatestRates();
       final usd = result.valueOrNull!.single;
 
       expect(usd.rateInEgp, closeTo(50, 1e-9)); // 1 / 0.02
       expect(usd.previousRateInEgp, closeTo(40, 1e-9)); // 1 / 0.025
-      verify(() => local.cacheRates(today)).called(1);
+      verify(() => local.cacheRates(today, previous: yesterday)).called(1);
     });
 
-    test('serves the cached snapshot when offline', () async {
+    test('serves cached today + yesterday change when offline', () async {
       when(() => remote.getLatest()).thenThrow(const NoInternetException());
       when(() => local.getCachedRates()).thenReturn(today);
+      when(() => local.getCachedPreviousRates()).thenReturn(yesterday);
 
       final result = await repository.getLatestRates();
       final usd = result.valueOrNull!.single;
 
       expect(usd.rateInEgp, closeTo(50, 1e-9));
-      expect(usd.absoluteChange, 0); // no yesterday offline -> zero change
+      expect(usd.previousRateInEgp, closeTo(40, 1e-9)); // real change offline
+      expect(usd.absoluteChange, closeTo(10, 1e-9));
+    });
+
+    test('falls back to zero change when only today is cached', () async {
+      when(() => remote.getLatest()).thenThrow(const NoInternetException());
+      when(() => local.getCachedRates()).thenReturn(today);
+      when(() => local.getCachedPreviousRates()).thenReturn(null);
+
+      final result = await repository.getLatestRates();
+      final usd = result.valueOrNull!.single;
+
+      expect(usd.rateInEgp, closeTo(50, 1e-9));
+      expect(usd.absoluteChange, 0); // no previous snapshot -> zero change
     });
 
     test('returns NetworkFailure when offline with no cache', () async {
