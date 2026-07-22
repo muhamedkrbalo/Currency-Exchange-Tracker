@@ -9,10 +9,9 @@ import 'core/localization/app_localization.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await EasyLocalization.ensureInitialized();
-  await Hive.initFlutter();
-  await Hive.openBox(HiveBoxes.settings);
-  await Hive.openBox(HiveBoxes.ratesCache);
+
+  await _initLocalization();
+  await _initLocalStorage();
   await configureDependencies();
 
   runApp(
@@ -23,4 +22,14 @@ Future<void> main() async {
       child: const CurrencyExchangeApp(),
     ),
   );
+}
+
+Future<void> _initLocalization() async {
+  await EasyLocalization.ensureInitialized();
+}
+
+Future<void> _initLocalStorage() async {
+  await Hive.initFlutter();
+  await Hive.openBox(HiveBoxes.settings);
+  await Hive.openBox(HiveBoxes.ratesCache);
 }
